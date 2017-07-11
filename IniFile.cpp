@@ -13,15 +13,22 @@ IniFile::IniFile(string fileName){
     ifstream    inFile(fileName.c_str());
     string      readString;
 
+    //set a default value
     m_currentSection = DEFAULT_SECTION;
 
     if(inFile.is_open()){
+
+        //read line by line
         while(getline(inFile, readString)){
-            
+
+            //chech empty string
             if(!readString.empty())
             {
                 if(!ClassifyRegex(readString))
+                {
                     cout << "Invalid Format(ctor)" << endl;
+                    break;
+                }
             }
         }//end while
     }
@@ -63,7 +70,8 @@ bool IniFile::ClassifyRegex(string xInString)
     regex   commentRX("^\\s*;(\\S*\\s*)*$");
 
     //RX for section
-    if(regex_match(xInString,matchRX, sectionRX)){
+    //Section never get store into a map until there are property in it
+    if(regex_match(xInString, matchRX, sectionRX)){
         m_currentSection = matchRX[SECTION_POS];
 
         Debug("-- Section: " <<  matchRX[SECTION_POS] << endl); 
@@ -77,13 +85,14 @@ bool IniFile::ClassifyRegex(string xInString)
         //m_Map.emplace(m_currentSection,tempMap);
 
         //this line do the same as above three line but less efficiency
-        m_Map[m_currentSection][matchRX[PROPERTY_POS]]= matchRX[VALUE_POS];
+        // this is an easy way to do a nested map
+        m_Map[m_currentSection][matchRX[PROPERTY_POS]] = matchRX[VALUE_POS];
 
-        Debug("-- Property: " << matchRX[PROPERTY_POS]<< endl);
+        Debug("-- Property: " << matchRX[PROPERTY_POS] << endl);
         Debug("-- Value: " << matchRX[VALUE_POS] << endl);
     }
     //RX blank line (space)
-    else if(regex_match(xInString,emptySpaceRX))
+    else if(regex_match(xInString, emptySpaceRX))
     {
         Debug("-- Blank Line" << endl);
     }

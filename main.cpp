@@ -18,10 +18,11 @@ int main(int argc, char* argv[])
     }
     else{
         string saa(argv[1]);
+        cout << "filename: "<< saa << endl;
 
-        cout << "Test: "<< saa << endl;
         IniFile NewFile(saa);
-        cout << "Test: "<< NewFile.GetProfileString("Section1A", "PropertyA") << endl;
+
+        cout << "Test Start type 'q' to Exit: "<< endl;
 
         while(1)
         {
@@ -42,4 +43,4 @@ int main(int argc, char* argv[])
 
     }
     return 0;
-}
+}//end main
