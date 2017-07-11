@@ -1,33 +1,45 @@
 #include "header/IniFile.h"
 
+
+//====Ctor=======================================
+//Open the input file and read it line by line
+//This function will generate the whole
+// INI table to look up the section and property
+// Param:
+//  fileName [IN]   - INI file want to read
+//===============================================
 IniFile::IniFile(string fileName){
     
-    ifstream inFile(fileName.c_str());
-    string readString;
+    ifstream    inFile(fileName.c_str());
+    string      readString;
 
     m_currentSection = DEFAULT_SECTION;
-    //inFile.open;
 
     if(inFile.is_open()){
-
         while(getline(inFile, readString)){
             
-            if(readString.empty())
+            if(!readString.empty())
             {
-                Debug("-- Empty line" << endl);
-            }
-            else
-            {
-                ClassifyRegex(readString);
+                if(!ClassifyRegex(readString))
+                    cout << "Invalid Format(ctor)" << endl;
             }
         }//end while
-
     }
     else{
-        Debug("Unable to open file" << endl);
-    }    
+        cout <<"Unable to open file" << endl;
+    }  
+    inFile.close();  
 }
 
+
+//====GetProfileString==================================================
+//retrieve the file from Map and return it 
+//Param:
+//  section [IN]        - name of section want to find
+//  property_name [IN]  - name of property want to fine
+//Return:
+//  Striing     - value corresponing to given secion and property
+//=====================================================================
 string IniFile::GetProfileString(string section, string property_name)
 {
     //cout << "MAP:: "<< m_Map[section][property_name] << endl;
@@ -41,19 +53,25 @@ string IniFile::GetProfileString(string section, string property_name)
 
 bool IniFile::ClassifyRegex(string xInString)
 {
-    smatch matchRX;
-    regex sectionRX("^\\s*\\[(\\w+)\\]\\s*$");
-    regex propertyRX("^\\s*(\\w+)\\s*=\\s*(\\w+)\\s*$");
-    regex emptySpaceRX("^\\s*");
-    regex commentRX("^\\s*;(\\S*\\s*)*$");
+    smatch  matchRX;
+    bool    flagCheck = true;
 
+    //All four Regular Expression
+    regex   sectionRX("^\\s*\\[(\\w+)\\]\\s*$");
+    regex   propertyRX("^\\s*(\\w+)\\s*=\\s*(\\w+)\\s*$");
+    regex   emptySpaceRX("^\\s*");
+    regex   commentRX("^\\s*;(\\S*\\s*)*$");
 
+    //RX for section
     if(regex_match(xInString,matchRX, sectionRX)){
         m_currentSection = matchRX[SECTION_POS];
 
         Debug("-- Section: " <<  matchRX[SECTION_POS] << endl); 
     }
+    //RX for property
     else if(regex_match(xInString, matchRX, propertyRX)){
+
+        //this will insert the map as individual map
         //map<string, string> tempMap;
         //tempMap.emplace(matchRX[PROPERTY_POS],matchRX[VALUE_POS]);
         //m_Map.emplace(m_currentSection,tempMap);
@@ -64,18 +82,22 @@ bool IniFile::ClassifyRegex(string xInString)
         Debug("-- Property: " << matchRX[PROPERTY_POS]<< endl);
         Debug("-- Value: " << matchRX[VALUE_POS] << endl);
     }
+    //RX blank line (space)
     else if(regex_match(xInString,emptySpaceRX))
     {
         Debug("-- Blank Line" << endl);
     }
+    //RX comment
     else if(regex_match(xInString, commentRX))
     {
         Debug("-- Comment " << endl);
     }
+    //Invalid format
     else
     {
         Debug("-- Invalide Format" << endl);
+        flagCheck = false;
     }
     
-    return 0;
+    return flagCheck;
 }
