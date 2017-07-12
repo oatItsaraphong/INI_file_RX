@@ -15,6 +15,8 @@
 #include <cstdlib>
 #include <regex>
 #include <map>
+#include <cctype>
+#include <algorithm>
 
 
 using namespace std;
@@ -27,11 +29,12 @@ class IniFile {
         //Function
         string      GetProfileString(string section, string property_name);
         bool        ClassifyRegex(string xInString);
+        
     private:
         const int       SECTION_POS = 1;
         const int       PROPERTY_POS = 1;
         const int       VALUE_POS = 2;
-        const string    DEFAULT_SECTION = "global";
+        const string    DEFAULT_SECTION = "GLOBAL";
 
         string      m_currentSection;
         map<string, map<string, string>>    m_Map;

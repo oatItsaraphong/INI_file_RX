@@ -46,15 +46,20 @@ IniFile::IniFile(string fileName){
 //  property_name [IN]  - name of property want to fine
 //Return:
 //  Striing     - value corresponing to given secion and property
+//              - return empty string if no match
 //=====================================================================
 string IniFile::GetProfileString(string section, string property_name)
 {
+    string temp = section;
+    transform(temp.begin(), temp.end(), temp.begin(),(int(*)(int))toupper);
+    string temp2 = property_name;
+        transform(temp2.begin(), temp2.end(), temp2.begin(),(int(*)(int))toupper);
     //cout << "MAP:: "<< m_Map[section][property_name] << endl;
-    if(m_Map[section][property_name] == "")
+    if(m_Map[temp][temp2] == "")
     {
-        return "Unknown Value";
+        return "";
     }
-    return m_Map[section][property_name];
+    return m_Map[temp][temp2];
 }
 
 
@@ -71,14 +76,20 @@ bool IniFile::ClassifyRegex(string xInString)
 
     //RX for section
     //Section never get store into a map until there are property in it
-    if(regex_match(xInString, matchRX, sectionRX)){
-        m_currentSection = matchRX[SECTION_POS];
+    if(regex_match(xInString, matchRX, sectionRX))
+    {
+        string temp = matchRX[SECTION_POS];
+        transform(temp.begin(), temp.end(), temp.begin(),(int(*)(int))toupper);
+        m_currentSection = temp;
 
-        Debug("-- Section: " <<  matchRX[SECTION_POS] << endl); 
+        Debug("-- Section: " <<  temp << endl); 
     }
     //RX for property
-    else if(regex_match(xInString, matchRX, propertyRX)){
+    else if(regex_match(xInString, matchRX, propertyRX))
+    {
 
+        string temp = matchRX[PROPERTY_POS];
+        transform(temp.begin(), temp.end(),temp.begin() ,(int(*)(int))toupper);
         //this will insert the map as individual map
         //map<string, string> tempMap;
         //tempMap.emplace(matchRX[PROPERTY_POS],matchRX[VALUE_POS]);
@@ -86,9 +97,9 @@ bool IniFile::ClassifyRegex(string xInString)
 
         //this line do the same as above three line but less efficiency
         // this is an easy way to do a nested map
-        m_Map[m_currentSection][matchRX[PROPERTY_POS]] = matchRX[VALUE_POS];
+        m_Map[m_currentSection][temp] = matchRX[VALUE_POS];
 
-        Debug("-- Property: " << matchRX[PROPERTY_POS] << endl);
+        Debug("-- Property: " << temp << endl);
         Debug("-- Value: " << matchRX[VALUE_POS] << endl);
     }
     //RX blank line (space)
