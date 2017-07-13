@@ -62,7 +62,14 @@ string IniFile::GetProfileString(string section, string property_name)
     return m_Map[temp][temp2];
 }
 
-
+//====ClassifyRegex===================================================
+//Classify each string into each type and store it into a map
+//Param:
+//  xInString   [IN]    string need to be classify
+//Return:
+//  bool        - true if input have correct format
+//              - false if incorrect format
+//===================================================================
 bool IniFile::ClassifyRegex(string xInString)
 {
     smatch  matchRX;
