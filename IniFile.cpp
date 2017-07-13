@@ -70,7 +70,7 @@ bool IniFile::ClassifyRegex(string xInString)
 
     //All four Regular Expression
     regex   sectionRX("^\\s*\\[(\\w+)\\]\\s*$");
-    regex   propertyRX("^\\s*(\\w+)\\s*=\\s*(\\w+)\\s*$");
+    regex   propertyRX("^\\s*(\\w+)\\s*=\\s*((\\w+\\s*)*)\\s*$");
     regex   emptySpaceRX("^\\s*");
     regex   commentRX("^\\s*;(\\S*\\s*)*$");
 
